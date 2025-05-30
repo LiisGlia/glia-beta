@@ -26,80 +26,9 @@
 
   <script src="//api.beta.salemove.com/salemove_integration.js"></script>
 
-  <script>
-		const params = new Proxy(new URLSearchParams(window.location.search), {
-			get: (searchParams, prop) => searchParams.get(prop),
-		});
-		const idToken = params.idtoken;
-		window.getGliaContext = () => ({ idToken });
-	</script>
-
-  <script>
-    sm.getApi({version: 'v1'}).then(function(glia) {
-      
-      function addSubmitListener(engagement) {
-        var submit = document.querySelector('#some_action');
-        
-        submit.addEventListener('click', function() {
-          if (engagement && typeof engagement.recordEvent === 'function') {
-            engagement.recordEvent({message: 'Action button clicked'})
-              .then(() => {
-                console.log('Event recorded successfully');
-              })
-              .catch((error) => {
-                console.error('Error recording event:', error);
-              });
-          } else {
-            console.error('Invalid engagement object or recordEvent method not found');
-          }
-        });
-      }
-        
-      glia.addEventListener(glia.EVENTS.ENGAGEMENT_START, addSubmitListener);
-    });
-  </script>
-  
-  <script>
-    function getIPAddress() {
-      return fetch('https://api.ipify.org?format=json')
-          .then(response => response.json())
-          .then(data => data.ip);
-    }
-
-    function getGeolocation(ip) {
-        return fetch(`https://ipapi.co/${ip}/json/`)
-            .then(response => response.json());
-    }
-
-    function setLocationAttribute() {
-        getIPAddress()
-            .then(ip => getGeolocation(ip))
-            .then(geoData => {
-                const locationValue = geoData.country === 'EE' ? 'EE' : 'other';
-                
-                sm.getApi({version: 'v1'}).then(function(glia) {
-                    glia.updateInformation({
-                        customAttributes: {
-                            location: locationValue
-                        }
-                    }).then(function() {
-                        console.log('Location attribute set successfully:', locationValue);
-                    }).catch(function(error) {
-                        if (error.cause == glia.ERRORS.NETWORK_TIMEOUT) {
-                            console.error('Network timeout error');
-                        } else {
-                            console.error('Other error:', error);
-                        }
-                    });
-                });
-            })
-            .catch(error => {
-                console.error('Error getting location:', error);
-            });
-    }
-
-    setLocationAttribute();
-  </script>
+  <script src="token.js"></script>
+  <script src="buttonClickEvent.js"></script>>
+  <script src="geolocation.js"></script>
   
   <div>
     <button id="some_action" style="background-color: #7C19DD; color: white; border-radius: 5px; padding: 10px 20px; font-size: 16px;">
